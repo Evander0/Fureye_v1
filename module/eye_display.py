@@ -14,7 +14,8 @@ def __main__(dynamic, b, c):
     global il1, il2, il3
     dynamic['eyes'] = [0, 0]
     root = Tk()
-    root.state('zoomed')
+    root.state('normal')
+    root.master.attributes("-zoomed", True)
     root.overrideredirect(True)
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
