@@ -25,6 +25,7 @@ def __main__():
         root.attributes("-fullscreen", True)
     sys.path.append(path)
     files = os.listdir(path)
+    print(f"./{path}/{files[0]}")
     il1 = PhotoImage(file=f"./{path}/{files[0]}")
     canvas = Canvas(root, width=screen_width, height=screen_height)
     canvas.place(x=0, y=0, width=screen_width, height=screen_height)
