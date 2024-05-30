@@ -20,6 +20,7 @@ def __main__():
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
     root.overrideredirect(True)
+    root.config(cursor="none")
     root.geometry(f'{screen_width}x{screen_height}')
     canvas = Canvas(root, width=screen_width, height=screen_height)
     if static["SYSINFO"] == "Windows":
