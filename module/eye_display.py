@@ -1,5 +1,5 @@
 from lib import *
-import os
+from time import sleep
 import sys
 from tkinter import *
 
@@ -38,6 +38,7 @@ def __main__():
         dy = (y - int(canvas.coords(layer[0])[1])) / speed
         canvas.move(layer[0], dx, dy)
         root.update()
+        sleep(0.02)
 
 
 def load(name):
