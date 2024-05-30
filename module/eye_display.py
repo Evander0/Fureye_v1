@@ -18,6 +18,7 @@ def __main__():
     root.overrideredirect(True)
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
+    root.geometry(f'{screen_width}x{screen_height}')
     if static["SYSINFO"] == "Windows":
         root.state('zoom')
     else:
@@ -37,5 +38,4 @@ def __main__():
         dx = (x - int(canvas.coords(l1)[0])) / speed
         dy = (y - int(canvas.coords(l1)[1])) / speed
         canvas.move(l1, dx, dy)
-        print(x,y)
         root.update()
