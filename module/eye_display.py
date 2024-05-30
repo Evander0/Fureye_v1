@@ -18,9 +18,10 @@ def __main__():
     root.overrideredirect(True)
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
-    if static["SYSINFO"]== "Windows":
+    if static["SYSINFO"] == "Windows":
         root.state('zoom')
     else:
+        root.state('normal')
         root.attributes("-fullscreen", True)
     sys.path.append(path)
     files = os.listdir(path)
