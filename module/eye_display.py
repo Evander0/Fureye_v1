@@ -31,11 +31,11 @@ def __main__():
     l1 = canvas.create_image(0, 0, image=il1, anchor=NW)
 
     canvas.moveto(l1, screen_width / 2 - il1.width() / 2, screen_height / 2 - il1.height() / 2)
-    root.update()
     while 1:
         x = int(dynamic['eyes'][0] * screen_width / 2 + screen_width / 2 - il1.width() / 2)
         y = int(dynamic['eyes'][1] * screen_height / 2 + screen_height / 2 - il1.height() / 2)
         dx = (x - int(canvas.coords(l1)[0])) / speed
         dy = (y - int(canvas.coords(l1)[1])) / speed
         canvas.move(l1, dx, dy)
+        print(x,y)
         root.update()
