@@ -3,7 +3,7 @@ import os
 import sys
 from tkinter import *
 
-path = "./src/"
+path = "src"
 il1 = None
 il2 = None
 il3 = None
