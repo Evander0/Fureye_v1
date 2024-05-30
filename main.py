@@ -24,10 +24,6 @@ def install(package):
     subprocess.check_call(["pip", "install", package])
 
 
-plugins = map(pick_module, files)
-plugins = [_ for _ in plugins if _ != ""]
-print(plugins)
-
 os_info = platform.system()
 os_version = platform.version()
 python_version = platform.python_version()
@@ -38,6 +34,10 @@ static["SYSINFO"] = os_info
 static["SYSVER"] = os_version
 static["PYVER"] = python_version
 print(os_info)
+
+plugins = map(pick_module, files)
+plugins = [_ for _ in plugins if _ != ""]
+print(plugins)
 
 for name in plugins:
     try:
