@@ -1,3 +1,4 @@
+from lib import *
 import tkinter
 
 data: list
@@ -10,7 +11,7 @@ def motion(event):
     # print(f"{x}, {y}")
 
 
-def __main__(dynamic, b, c):
+def __main__():
     return
 
     global data

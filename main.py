@@ -1,19 +1,16 @@
+from lib import *
 import os
 import importlib
 import sys
 import traceback
 import threading
+import subprocess
+import platform
 
 plugin_suffix = "py"
 path = os.path.join("module")
-
 sys.path.append(path)
 files = os.listdir(path)
-loaded_plugins: dict = {}
-dynamic: dict = {}
-static: dict = {}
-threads: dict = {}
-command: str = ""
 
 
 def pick_module(name):
@@ -23,9 +20,24 @@ def pick_module(name):
         return ""
 
 
+def install(package):
+    subprocess.check_call(["pip", "install", package])
+
+
 plugins = map(pick_module, files)
 plugins = [_ for _ in plugins if _ != ""]
 print(plugins)
+
+os_info = platform.system()
+os_version = platform.version()
+python_version = platform.python_version()
+if python_version[0] != '3':
+    print(f"Python version {python_version} not supported")
+    exit(-1)
+static["SYSINFO"] = os_info
+static["SYSVER"] = os_version
+static["PYVER"] = python_version
+print(os_info)
 
 for name in plugins:
     try:
@@ -43,8 +55,8 @@ for name in plugins:
 
 for name in plugins:
     try:
-        threads[name] = threading.Thread(target=loaded_plugins[name].__main__, name=name,
-                                         args=(dynamic, static, threads), daemon=True)
+        threads[name] = threading.Thread(target=loaded_plugins[name].__main__,
+                                         name=name, daemon=True)
         threads[name].start()
     except Exception as e:
         print(f"Exception running plugin {name}: {e}")

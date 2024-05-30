@@ -1,8 +1,9 @@
+from lib import *
 from time import sleep
 import random
 
 
-def __main__(dynamic, static, NULL):
+def __main__():
     sleep(0.1)
     data = dynamic["eyes"]
     while 1:

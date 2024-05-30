@@ -1,3 +1,4 @@
+from lib import *
 import os
 import sys
 from tkinter import *
@@ -10,15 +11,17 @@ il3 = None
 speed = 5
 
 
-def __main__(dynamic, b, c):
+def __main__():
     global il1, il2, il3
     dynamic['eyes'] = [0, 0]
     root = Tk()
-    root.state('normal')
-    root.master.attributes("-zoomed", True)
     root.overrideredirect(True)
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
+    if static["SYSINFO"]== "Windows":
+        root.state('zoom')
+    else:
+        root.attributes("-fullscreen", True)
     sys.path.append(path)
     files = os.listdir(path)
     il1 = PhotoImage(file=f"./{path}/{files[0]}")
