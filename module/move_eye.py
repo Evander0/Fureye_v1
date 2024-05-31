@@ -2,9 +2,11 @@ from lib import *
 from time import sleep
 import random
 
+conf = open('./config/display.json', 'w+')
+
 
 def __main__():
-    sleep(0.1)
+    sleep(0.5)
     data = dynamic["eyes"]
     while 1:
         x = random.uniform(-0.05, 0.05)

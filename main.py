@@ -39,6 +39,10 @@ plugins = map(pick_module, files)
 plugins = [_ for _ in plugins if _ != ""]
 print(plugins)
 
+if not os.path.exists('config'):
+    print("正在创建配置文件夹")
+    os.mkdir('config')
+
 for name in plugins:
     try:
         loaded_plugins[name] = importlib.import_module(f"{path}.{name}")
