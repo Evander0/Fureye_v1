@@ -26,7 +26,6 @@ def __main__():
 
     try:
         with open(config_file, 'r+') as f:
-            print(f.read())
             conf = json.load(f)
         path = conf['Path']
         file = conf['Layer']
