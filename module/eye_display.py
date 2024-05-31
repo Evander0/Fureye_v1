@@ -32,7 +32,7 @@ def __main__():
         speed = conf['Speed']
     except Exception as e:
         print("显示模块配置文件异常，正在重置")
-        print(e)
+        print("错误代码："+str(e))
         data = json.dumps(default, indent=4)
         with open(config_file, 'w') as f:
             f.write("\n"+data)
