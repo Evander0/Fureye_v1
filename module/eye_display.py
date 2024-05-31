@@ -25,7 +25,7 @@ def __main__():
     global files, layer, file, path, speed, screen_width, screen_height, canvas
 
     try:
-        with open(config_file, 'r+') as f:
+        with open(config_file, 'r') as f:
             conf = json.load(f)
         path = conf['Path']
         file = conf['Layer']
@@ -33,8 +33,9 @@ def __main__():
     except Exception as e:
         print("显示模块配置文件异常，正在重置")
         print(e)
+        data = json.dumps(default, indent=4)
         with open(config_file, 'w') as f:
-            json.dump(default, f, indent=4)
+            f.write("\n"+data)
 
     dynamic['eyes'] = [0, 0]
     root = Tk()
