@@ -43,21 +43,29 @@ def load_module(name):
         return -1
 
 
-def unload_module(name):
-    id = threads[name].native_id
+def unload_module(t_name):
+    t_id = threads[t_name].native_id
     try:
-        res = ctypes.pythonapi.PyThreadState_SetAsyncExc(id, ctypes.py_object(SystemExit))
+        res = ctypes.pythonapi.PyThreadState_SetAsyncExc(t_id, ctypes.py_object(SystemExit))
         if res == 0:
             print("Invalid thread id!")
         elif res > 1:
-            ctypes.pythonapi.PyThreadState_SetAsyncExc(threads[name], 0)
+            ctypes.pythonapi.PyThreadState_SetAsyncExc(threads[t_name], 0)
             print("Exception raise failure")
             return
+        del threads[t_name]
         return 0
     except Exception as e:
-        print(f"Exception stopping module {name}: {e}")
+        print(f"Exception stopping module {t_name}: {e}")
         traceback.print_exc()
         return -1
+
+
+def main_quit():
+    for thread in threads:
+        unload_module(thread)
+    print("主程序终止")
+    quit()
 
 
 os_info = platform.system()
@@ -66,9 +74,9 @@ python_version = platform.python_version()
 if python_version[0] != '3':
     print(f"Python version {python_version} not supported")
     exit(-1)
-static["SYSINFO"] = os_info
-static["SYSVER"] = os_version
-static["PYVER"] = python_version
+static["SYS_INFO"] = os_info
+static["SYS_VER"] = os_version
+static["PY_VER"] = python_version
 disabled = []
 
 plugins = map(pick_module, files)
@@ -108,7 +116,24 @@ for name in plugins:
 while 1:
     try:
         command = input("$: ").split(" ")
-        if command[0] == "exit":
-            quit(0)
+        match command[0]:
+            case "exit":
+                try:
+                    if command[1] in threads:
+                        unload_module(command[1])
+                    else:
+                        print("未知模块")
+                except IndexError:
+                    main_quit()
+            case "list":
+                match command[1]:
+                    case "plugins":
+                        print(plugins)
+                    case "threads":
+                        print(threads)
+            case _:
+                print("未知指令")
+    except IndexError:
+        print("未知指令")
     except KeyboardInterrupt:
-        print("程序终止")
+        main_quit()
