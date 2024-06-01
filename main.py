@@ -73,15 +73,13 @@ def unload_module(t_name):
         print(f"failed to quit {t_name}")
 
 
-def main_quit():
+def quit_all():
     try:
         tmp = threads.copy()
         for thread in tmp:
             unload_module(thread)
     except:
         pass
-    print("主程序终止")
-    quit()
 
 
 os_info = platform.system()
@@ -144,7 +142,9 @@ while 1:
                     else:
                         print("未知模块")
                 except IndexError:
-                    main_quit()
+                    quit_all()
+                    print("主程序终止")
+                    quit()
             case "list":
                 match command[1]:
                     case "plugins":
@@ -158,4 +158,6 @@ while 1:
     except IndexError:
         print("未知指令")
     except KeyboardInterrupt:
-        main_quit()
+        quit_all()
+        print("主程序终止")
+        quit()
