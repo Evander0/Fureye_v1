@@ -44,7 +44,7 @@ def __main__():
     root.config(cursor="none")
     root.geometry(f'{screen_width}x{screen_height}')
     canvas = Canvas(root, width=screen_width, height=screen_height)
-    if static["SYSINFO"] == "Windows":
+    if static["SYS_INFO"] == "Windows":
         root.state('zoom')
     else:
         root.state('normal')
