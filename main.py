@@ -8,6 +8,7 @@ import subprocess
 import platform
 import json
 import ctypes
+global threads, loaded_plugins
 
 plugin_suffix = "py"
 path = os.path.join("module")
@@ -32,19 +33,6 @@ def install(package):
 
 
 def load_module(t_name):
-    global threads, loaded_plugins
-    try:
-        loaded_plugins[t_name] = importlib.import_module(f"{path}.{t_name}")
-    except ModuleNotFoundError:
-        traceback.print_exc()
-        return
-    except ImportError:
-        traceback.print_exc()
-        return
-    except Exception as e:
-        print(f"Exception loading plugin {t_name}: {e}")
-        traceback.print_exc()
-        return
     try:
         threads[t_name] = threading.Thread(target=loaded_plugins[t_name].__main__,
                                            name=t_name, daemon=True)
@@ -57,7 +45,6 @@ def load_module(t_name):
 
 
 def unload_module(t_name):
-    global threads
     t_id = threads[t_name].native_id
     try:
         res = ctypes.pythonapi.PyThreadState_SetAsyncExc(t_id, ctypes.py_object(SystemExit))
@@ -112,6 +99,18 @@ except Exception as e:
 
 for name in plugins:
     if name not in disabled:
+        try:
+            loaded_plugins[name] = importlib.import_module(f"{path}.{name}")
+        except ModuleNotFoundError:
+            traceback.print_exc()
+            continue
+        except ImportError:
+            traceback.print_exc()
+            continue
+        except Exception as e:
+            print(f"Exception loading plugin {name}: {e}")
+            traceback.print_exc()
+            continue
         load_module(name)
 
 
