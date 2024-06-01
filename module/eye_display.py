@@ -53,7 +53,8 @@ def __main__():
     sys.path.append(path)
     load(file[0])
     canvas.place(x=0, y=0, width=screen_width, height=screen_height)
-    while 1:
+    static["running"]["eye_display"] = True
+    while static["running"]["eye_display"]:
         x = int(dynamic['eyes'][0] * screen_width / 2 + screen_width / 2 - files[index].width() / 2)
         y = int(dynamic['eyes'][1] * screen_height / 2 + screen_height / 2 - files[index].height() / 2)
         dx = (x - int(canvas.coords(layer[0])[0])) / (10/speed)
@@ -61,6 +62,10 @@ def __main__():
         canvas.move(layer[0], dx, dy)
         root.update()
         sleep(0.02)
+    canvas.destroy()
+    root.destroy()
+    del static["running"]["eye_display"]
+    return
 
 
 def load(name):

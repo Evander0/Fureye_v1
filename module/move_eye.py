@@ -28,9 +28,12 @@ def __main__():
 
     sleep(0.5)
     data = dynamic["eyes"]
-    while 1:
+    static["running"]["move_eye"] = True
+    while static["running"]["move_eye"]:
         x = random.uniform(limit[0], limit[1])
         y = random.uniform(limit[0], limit[1])
         data[0] = x
         data[1] = y
         sleep(random.uniform(time[0], time[1]))
+    del static["running"]["move_eye"]
+    return

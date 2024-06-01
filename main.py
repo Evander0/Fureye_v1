@@ -8,6 +8,7 @@ import subprocess
 import platform
 import json
 import ctypes
+from time import sleep
 global threads, loaded_plugins
 
 plugin_suffix = "py"
@@ -47,25 +48,38 @@ def load_module(t_name):
 def unload_module(t_name):
     t_id = threads[t_name].ident
     print(t_id)
-    try:
-        res = ctypes.pythonapi.PyThreadState_SetAsyncExc(t_id, ctypes.py_object(SystemExit))
-        if res == 0:
-            print("Invalid thread id!")
+    static["running"][t_name] = False
+    threads[t_name].join(timeout=1)
+    if threads[t_name].is_alive():
+        print("soft quit failed")
+        try:
+            res = ctypes.pythonapi.PyThreadState_SetAsyncExc(t_id, ctypes.py_object(SystemExit))
+            if res == 0:
+                print("Invalid thread id!")
+                return
+            elif res > 1:
+                ctypes.pythonapi.PyThreadState_SetAsyncExc(threads[t_name], 0)
+                print("Exception raise failure")
+                return
+        except Exception as e:
+            print(f"Exception stopping module {t_name}: {e}")
+            traceback.print_exc()
             return
-        elif res > 1:
-            ctypes.pythonapi.PyThreadState_SetAsyncExc(threads[t_name], 0)
-            print("Exception raise failure")
-            return
-    except Exception as e:
-        print(f"Exception stopping module {t_name}: {e}")
-        traceback.print_exc()
-        return
-    del threads[t_name]
+        sleep(0.5)
+    if not threads[t_name].is_alive():
+        del threads[t_name]
+        print(f"{t_name} quit")
+    else:
+        print(f"failed to quit {t_name}")
 
 
 def main_quit():
-    for thread in threads:
-        unload_module(thread)
+    try:
+        tmp = threads.copy()
+        for thread in tmp:
+            unload_module(thread)
+    except:
+        pass
     print("主程序终止")
     quit()
 
@@ -79,6 +93,7 @@ if python_version[0] != '3':
 static["SYS_INFO"] = os_info
 static["SYS_VER"] = os_version
 static["PY_VER"] = python_version
+static["running"] = {}
 disabled = []
 
 plugins = map(pick_module, files)
@@ -137,6 +152,8 @@ while 1:
                         print(plugins)
                     case "threads":
                         print(threads)
+                    case _:
+                        print("未知指令(plugins/threads)")
             case _:
                 print("未知指令")
     except IndexError:

@@ -1,5 +1,6 @@
 import time
 from lib.mpu6050 import mpu6050
+from lib.lib import *
 
 error_x = 0
 error_y = 0
@@ -18,7 +19,8 @@ def __main__():
 
     calibrate(10, sensor)
 
-    while True:
+    static["running"]["mpu6050"] = True
+    while static["running"]["mpu6050"]:
         dt = 0.01
 
         accel_x = sensor.get_accel_data(g=True)["x"]
@@ -33,6 +35,8 @@ def __main__():
         z = int(round(kalman_filter_z.update(gyro_z), 2))
 
         time.sleep(dt)
+    del static["running"]["mpu6050"]
+    return
 
 
 class KalmanFilter:
