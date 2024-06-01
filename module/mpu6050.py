@@ -1,6 +1,39 @@
 import time
 from lib.mpu6050 import mpu6050
 
+error_x = 0
+error_y = 0
+error_z = 0
+
+process_noise = 1e-5
+measurement_noise = 6e-5
+estimation_error = 2
+
+
+def __main__():
+    sensor = mpu6050(0x68, 3)
+    kalman_filter_x = KalmanFilter(process_noise, measurement_noise, estimation_error)
+    kalman_filter_y = KalmanFilter(process_noise, measurement_noise, estimation_error)
+    kalman_filter_z = KalmanFilter(process_noise, measurement_noise, estimation_error)
+
+    calibrate(10, sensor)
+
+    while True:
+        dt = 0.01
+
+        accel_x = sensor.get_accel_data(g=True)["x"]
+        accel_y = sensor.get_accel_data(g=True)["y"]
+        accel_z = sensor.get_accel_data(g=True)["z"]
+        gyro_x = sensor.get_gyro_data()["x"] - error_x
+        gyro_y = sensor.get_gyro_data()["y"] - error_y
+        gyro_z = sensor.get_gyro_data()["z"] - error_z
+
+        x = int(round(kalman_filter_x.update(gyro_x), 2))
+        y = int(round(kalman_filter_y.update(gyro_y), 2))
+        z = int(round(kalman_filter_z.update(gyro_z), 2))
+
+        time.sleep(dt)
+
 
 class KalmanFilter:
     def __init__(self, p_noise, m_noise, e_error):
@@ -20,12 +53,7 @@ class KalmanFilter:
         return self.estimate
 
 
-error_x = 0
-error_y = 0
-error_z = 0
-
-
-def calibrate(times):
+def calibrate(times, sensor=None):
     global error_x, error_y, error_z
     tmp_x = 0
     tmp_y = 0
@@ -37,29 +65,3 @@ def calibrate(times):
     error_x = tmp_x / times
     error_y = tmp_y / times
     error_z = tmp_z / times
-
-
-process_noise = 1e-5
-measurement_noise = 6e-5
-estimation_error = 2
-sensor = mpu6050(0x68, 3)
-kalman_filter_x = KalmanFilter(process_noise, measurement_noise, estimation_error)
-kalman_filter_y = KalmanFilter(process_noise, measurement_noise, estimation_error)
-kalman_filter_z = KalmanFilter(process_noise, measurement_noise, estimation_error)
-
-calibrate(10)
-while True:
-    dt = 0.01
-
-    accel_x = sensor.get_accel_data(g=True)["x"]
-    accel_y = sensor.get_accel_data(g=True)["y"]
-    accel_z = sensor.get_accel_data(g=True)["z"]
-    gyro_x = sensor.get_gyro_data()["x"] - error_x
-    gyro_y = sensor.get_gyro_data()["y"] - error_y
-    gyro_z = sensor.get_gyro_data()["z"] - error_z
-
-    x = int(round(kalman_filter_x.update(gyro_x), 2))
-    y = int(round(kalman_filter_y.update(gyro_y), 2))
-    z = int(round(kalman_filter_z.update(gyro_z), 2))
-
-    time.sleep(dt)
