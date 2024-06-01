@@ -1,4 +1,4 @@
-from lib import *
+from lib.lib import *
 import os
 import importlib
 import sys
@@ -6,11 +6,18 @@ import traceback
 import threading
 import subprocess
 import platform
+import json
+import ctypes
 
 plugin_suffix = "py"
 path = os.path.join("module")
 sys.path.append(path)
 files = os.listdir(path)
+
+config_file = './config/main.json'
+default = {
+    "Disabled": []
+}
 
 
 def pick_module(name):
@@ -24,6 +31,35 @@ def install(package):
     subprocess.check_call(["pip", "install", package])
 
 
+def load_module(name):
+    try:
+        threads[name] = threading.Thread(target=loaded_plugins[name].__main__,
+                                         name=name, daemon=True)
+        threads[name].start()
+        return threads[name]
+    except Exception as e:
+        print(f"Exception running module {name}: {e}")
+        traceback.print_exc()
+        return -1
+
+
+def unload_module(name):
+    id = threads[name].native_id
+    try:
+        res = ctypes.pythonapi.PyThreadState_SetAsyncExc(id, ctypes.py_object(SystemExit))
+        if res == 0:
+            print("Invalid thread id!")
+        elif res > 1:
+            ctypes.pythonapi.PyThreadState_SetAsyncExc(threads[name], 0)
+            print("Exception raise failure")
+            return
+        return 0
+    except Exception as e:
+        print(f"Exception stopping module {name}: {e}")
+        traceback.print_exc()
+        return -1
+
+
 os_info = platform.system()
 os_version = platform.version()
 python_version = platform.python_version()
@@ -33,39 +69,46 @@ if python_version[0] != '3':
 static["SYSINFO"] = os_info
 static["SYSVER"] = os_version
 static["PYVER"] = python_version
-print(os_info)
+disabled = []
 
 plugins = map(pick_module, files)
 plugins = [_ for _ in plugins if _ != ""]
-print(plugins)
 
 if not os.path.exists('config'):
     print("正在创建配置文件夹")
     os.mkdir('config')
+try:
+    with open(config_file, 'r') as f:
+        conf = json.load(f)
+    disabled = conf['Disabled']
+except Exception as e:
+    print("模块管理器配置文件异常，正在重置")
+    print("错误代码：" + str(e))
+    data = json.dumps(default, indent=4)
+    with open(config_file, 'w') as f:
+        f.write("\n" + data)
 
 for name in plugins:
-    try:
-        loaded_plugins[name] = importlib.import_module(f"{path}.{name}")
-    except ModuleNotFoundError:
-        traceback.print_exc()
-        continue
-    except ImportError:
-        traceback.print_exc()
-        continue
-    except Exception as e:
-        print(f"Exception loading plugin {name}: {e}")
-        traceback.print_exc()
-        continue
+    if name not in disabled:
+        try:
+            loaded_plugins[name] = importlib.import_module(f"{path}.{name}")
+        except ModuleNotFoundError:
+            traceback.print_exc()
+            continue
+        except ImportError:
+            traceback.print_exc()
+            continue
+        except Exception as e:
+            print(f"Exception loading plugin {name}: {e}")
+            traceback.print_exc()
+            continue
+        load_module(name)
 
-for name in plugins:
-    try:
-        threads[name] = threading.Thread(target=loaded_plugins[name].__main__,
-                                         name=name, daemon=True)
-        threads[name].start()
-    except Exception as e:
-        print(f"Exception running plugin {name}: {e}")
-        traceback.print_exc()
-        continue
 
 while 1:
-    continue
+    try:
+        command = input("$: ").split(" ")
+        if command[0] == "exit":
+            quit(0)
+    except KeyboardInterrupt:
+        print("程序终止")

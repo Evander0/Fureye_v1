@@ -2,8 +2,7 @@ import json
 import sys
 from time import sleep
 from tkinter import *
-
-from lib import *
+from lib.lib import *
 
 config_file = './config/display.json'
 default = {

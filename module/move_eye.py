@@ -1,4 +1,4 @@
-from lib import *
+from lib.lib import *
 from time import sleep
 import random
 import json
