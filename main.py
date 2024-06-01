@@ -45,7 +45,7 @@ def load_module(t_name):
 
 
 def unload_module(t_name):
-    t_id = threads[t_name].native_id
+    t_id = threads[t_name].ident
     print(t_id)
     try:
         res = ctypes.pythonapi.PyThreadState_SetAsyncExc(t_id, ctypes.py_object(SystemExit))
