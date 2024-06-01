@@ -46,20 +46,21 @@ def load_module(t_name):
 
 def unload_module(t_name):
     t_id = threads[t_name].native_id
+    print(t_id)
     try:
         res = ctypes.pythonapi.PyThreadState_SetAsyncExc(t_id, ctypes.py_object(SystemExit))
         if res == 0:
             print("Invalid thread id!")
+            return
         elif res > 1:
             ctypes.pythonapi.PyThreadState_SetAsyncExc(threads[t_name], 0)
             print("Exception raise failure")
             return
-        del threads[t_name]
-        return 0
     except Exception as e:
         print(f"Exception stopping module {t_name}: {e}")
         traceback.print_exc()
-        return -1
+        return
+    del threads[t_name]
 
 
 def main_quit():
@@ -96,6 +97,10 @@ except Exception as e:
     data = json.dumps(default, indent=4)
     with open(config_file, 'w') as f:
         f.write("\n" + data)
+
+print(f"System: {os_info}")
+print(f"Python: {python_version}")
+print(f"Disabled: {disabled}")
 
 for name in plugins:
     if name not in disabled:
