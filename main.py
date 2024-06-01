@@ -96,9 +96,6 @@ static["PY_VER"] = python_version
 static["running"] = {}
 disabled = []
 
-plugins = map(pick_module, files)
-plugins = [_ for _ in plugins if _ != ""]
-
 if not os.path.exists('config'):
     print("正在创建配置文件夹")
     os.mkdir('config')
@@ -117,6 +114,8 @@ print(f"System: {os_info}")
 print(f"Python: {python_version}")
 print(f"Disabled: {disabled}")
 
+plugins = map(pick_module, files)
+plugins = [_ for _ in plugins if _ != ""]
 for name in plugins:
     if name not in disabled:
         try:
