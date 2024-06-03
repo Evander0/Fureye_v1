@@ -55,6 +55,7 @@ class UART:
     def close(self):
         wiringpi.serialClose(self.serial)
         self.listening = False
+        del self.eventHandler
 
     def start(self, func):
         self.listening = True
