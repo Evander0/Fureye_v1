@@ -2,7 +2,7 @@
 class Event:
     def __init__(self, name, **kwargs):
         self.name = name
-        self.params = kwargs
+        self.data = kwargs
 
 
 # 定义事件处理类

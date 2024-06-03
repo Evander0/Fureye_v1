@@ -1,15 +1,16 @@
 import threading
 import wiringpi
-import Event
+import lib.Event
 
 
-class UART:
+class Serial:
     serial = None
     rate = None
     mode = "HEX"
     encoding = "Utf-8"
     listening = False
-    eventHandler = Event.EventHandler()
+    thread = None
+    eventHandler = lib.Event.EventHandler()
 
     def __init__(self, device=0, rate=115200):
         self.rate = rate
@@ -43,14 +44,18 @@ class UART:
 
     def send(self, msg):
         match self.mode:
-            case "Text":
-                msgn = msg.encode()
             case "HEX":
                 msgn = int(msg)
+                wiringpi.serialFlush(self.serial)
+                wiringpi.serialPutchar(self.serial, msgn)
+            case "Text":
+                for t in msg:
+                    msgn = ord(str(t).encode(self.encoding))
+                    print(msgn)
+                    wiringpi.serialFlush(self.serial)
+                    wiringpi.serialPutchar(self.serial, msgn)
             case _:
                 raise ValueError(f"Unexpected Mode: {self.mode}")
-        wiringpi.serialFlush(self.serial)
-        wiringpi.serialPutchar(self.serial, msgn)
 
     def close(self):
         wiringpi.serialClose(self.serial)
@@ -59,8 +64,9 @@ class UART:
 
     def start(self, func):
         self.listening = True
-        threading.Thread(target=self.__listen__,
-                         name="uart_daemon", daemon=True)
+        self.thread = threading.Thread(target=self.__listen__,
+                                       name="uart_daemon")
+        self.thread.start()
         self.eventHandler.register_event("uart_listen", func)
 
     def __listen__(self):
@@ -68,7 +74,7 @@ class UART:
             while self.listening:
                 if wiringpi.serialDataAvail(self.serial):
                     msg = wiringpi.serialGetchar(self.serial)
-                    event = Event.Event("event1", data=msg)
+                    event = lib.Event.Event("uart_listen", msg=msg)
                     self.eventHandler.trigger_event(event)
             return
         finally:
