@@ -43,19 +43,18 @@ class Serial:
                 raise ValueError(f"Unexpected Encoding: {self.encoding}")
 
     def send(self, msg):
-        match self.mode:
-            case "HEX":
-                msgn = int(msg)
+        if self.mode == "HEX":
+            msgn = int(msg)
+            wiringpi.serialFlush(self.serial)
+            wiringpi.serialPutchar(self.serial, msgn)
+        elif self.mode == "Text":
+            for t in msg:
+                msgn = ord(str(t).encode(self.encoding))
                 wiringpi.serialFlush(self.serial)
                 wiringpi.serialPutchar(self.serial, msgn)
-            case "Text":
-                for t in msg:
-                    msgn = ord(str(t).encode(self.encoding))
-                    print(msgn)
-                    wiringpi.serialFlush(self.serial)
-                    wiringpi.serialPutchar(self.serial, msgn)
-            case _:
-                raise ValueError(f"Unexpected Mode: {self.mode}")
+                wiringpi.delayMicroseconds(100)
+            wiringpi.serialFlush(self.serial)
+            wiringpi.serialPutchar(self.serial, 4)
 
     def close(self):
         wiringpi.serialClose(self.serial)
@@ -70,12 +69,22 @@ class Serial:
         self.eventHandler.register_event("uart_listen", func)
 
     def __listen__(self):
+        msg = ""
         try:
             while self.listening:
                 if wiringpi.serialDataAvail(self.serial):
-                    msg = wiringpi.serialGetchar(self.serial)
-                    event = lib.Event.Event("uart_listen", msg=msg)
-                    self.eventHandler.trigger_event(event)
+                    if self.mode == "HEX":
+                        msg = wiringpi.serialGetchar(self.serial)
+                        event = lib.Event.Event("uart_listen", msg=msg)
+                        self.eventHandler.trigger_event(event)
+                    elif self.mode == "Text":
+                        tmp = int(wiringpi.serialGetchar(self.serial))
+                        if tmp == 4:
+                            event = lib.Event.Event("uart_listen", msg=msg)
+                            self.eventHandler.trigger_event(event)
+                            msg = ""
+                            continue
+                        msg += tmp.to_bytes(1, 'little').decode(self.encoding)
             return
         finally:
             self.listening = False
