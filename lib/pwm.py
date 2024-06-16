@@ -1,6 +1,5 @@
 import os
 
-
 class Pwm_sh:
     pwm_path: str
 
