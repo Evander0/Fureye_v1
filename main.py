@@ -145,10 +145,10 @@ while 1:
                 quit_all()
                 print("主程序终止")
                 quit()
-        elif command[0] == "list"
-            if command[1] == "plugins"
+        elif command[0] == "list":
+            if command[1] == "plugins":
                 print(plugins)
-            elif command[1] == "threads"
+            elif command[1] == "threads":
                 print(threads)
             else:
                 print("未知指令(plugins/threads)")
