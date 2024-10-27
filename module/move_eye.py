@@ -12,7 +12,7 @@ limit = default["Limit"]
 wtime = default["Time"]
 
 
-def __main__():
+def __init__():
     global limit, wtime
     try:
         with open(config_file, 'r') as f:

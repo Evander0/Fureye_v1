@@ -11,7 +11,7 @@ measurement_noise = 6e-5
 estimation_error = 2
 
 
-def __main__():
+def __init__():
     sensor = mpu6050(0x68, 3)
     kalman_filter_x = KalmanFilter(process_noise, measurement_noise, estimation_error)
     kalman_filter_y = KalmanFilter(process_noise, measurement_noise, estimation_error)

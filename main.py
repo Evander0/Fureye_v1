@@ -8,7 +8,7 @@ import subprocess
 import platform
 import json
 import ctypes
-from time import sleep
+import time
 global threads, loaded_plugins
 
 plugin_suffix = "py"
@@ -36,7 +36,7 @@ def install(package):
 def load_module(t_name):
     try:
         static["running"][t_name] = False
-        threads[t_name] = threading.Thread(target=loaded_plugins[t_name].__main__,
+        threads[t_name] = threading.Thread(target=loaded_plugins[t_name].__init__,
                                            name=t_name, daemon=True)
         threads[t_name].start()
         return threads[t_name]
@@ -50,7 +50,7 @@ def unload_module(t_name):
     t_id = threads[t_name].ident
     print(t_id)
     static["running"][t_name] = False
-    threads[t_name].join(timeout=1)
+    threads[t_name].join(timeout=5)
     if threads[t_name].is_alive():
         print("soft quit failed")
         try:
@@ -66,12 +66,18 @@ def unload_module(t_name):
             print(f"Exception stopping module {t_name}: {e}")
             traceback.print_exc()
             return
-        sleep(0.5)
-    if not threads[t_name].is_alive():
+        schedule = time.time() + 5
+        while time.time() <= schedule:
+            if not threads[t_name].is_alive():
+                del threads[t_name]
+                print(f"{t_name} quit")
+                break
+        if threads[t_name].is_alive():
+            print(f"failed to quit {t_name}")
+    else:
         del threads[t_name]
         print(f"{t_name} quit")
-    else:
-        print(f"failed to quit {t_name}")
+        return
 
 
 def quit_all():

@@ -18,7 +18,7 @@ screen_height = 0
 index = -1
 
 
-def __main__():
+def __init__():
     global files, layer, file, path, screen_width, screen_height, canvas
 
     try:
