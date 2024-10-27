@@ -1,1 +1,1 @@
-AFEDIUM (Advanced Fursuit of Electronic Device and Integrated Universal Manager)
+AFEDIUM (Advanced Fursuit of Electrical Device and Information Universal Manager)
