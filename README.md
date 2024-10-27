@@ -1,1 +1,1 @@
-3.9及以下不支持match-case方法，临时仓库不会持续维护
+AFEDIUM (Advanced Fursuit for Electronic Device and Integrated Universal Management)
