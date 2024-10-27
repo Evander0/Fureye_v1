@@ -35,6 +35,7 @@ def install(package):
 
 def load_module(t_name):
     try:
+        static["running"][t_name] = False
         threads[t_name] = threading.Thread(target=loaded_plugins[t_name].__main__,
                                            name=t_name, daemon=True)
         threads[t_name].start()
