@@ -142,25 +142,27 @@ for name in plugins:
 while 1:
     try:
         command = input("$: ").split(" ")
-        if command[0] == "quit":
-            try:
-                if command[1] in threads:
-                    unload_module(command[1])
-                else:
-                    print("未知模块")
-            except IndexError:
-                quit_all()
-                print("主程序终止")
-                quit()
-        elif command[0] == "list":
-            if command[1] == "plugins":
-                print(plugins)
-            elif command[1] == "threads":
-                print(threads)
-            else:
-                print("未知指令(plugins/threads)")
-        else:
-            print("未知指令")
+        match command[0]:
+            case "quit":
+                try:
+                    if command[1] in threads:
+                        unload_module(command[1])
+                    else:
+                        print("未知模块")
+                except IndexError:
+                    quit_all()
+                    print("主程序终止")
+                    quit()
+            case "list":
+                match command[1]:
+                    case "plugins":
+                        print(plugins)
+                    case "threads":
+                        print(threads)
+                    case _:
+                        print("未知指令(plugins/threads)")
+            case _:
+                print("未知指令")
     except IndexError:
         print("未知指令")
     except KeyboardInterrupt:
