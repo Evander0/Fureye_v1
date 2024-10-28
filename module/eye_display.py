@@ -61,8 +61,8 @@ def __init__():
             dx = (x - int(canvas.coords(layer[i])[0]))
             dy = (y - int(canvas.coords(layer[i])[1]))
             canvas.move(layer[i], dx, dy)
-        root.update()
         sleep(0.02)
+        root.update()
     canvas.destroy()
     root.destroy()
     del static["running"]["eye_display"]
