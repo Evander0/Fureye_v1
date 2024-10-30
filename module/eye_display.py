@@ -1,3 +1,4 @@
+import glob
 import json
 import sys
 import pathlib
@@ -91,7 +92,7 @@ def load(name):
     dynamic['eyes'][index]["selected"] = 0
     dynamic['eyes'][index]["enabled"] = False
 
-    file = pathlib.Path(list(pathlib.Path(f"./{path}").glob(f'{name}.*'))[0])
+    file = pathlib.Path(list(glob.glob(f'./{path}/{name}.*'))[0])
     files.append([])
     layer.append([])
     match file.suffix:

@@ -38,9 +38,5 @@ def __init__():
             mdata[0]["x"] += (x - mdata[0]["nx"]) / 20
             mdata[0]["y"] += (y - mdata[0]["ny"]) / 20
             time.sleep(0.01)
-    # while static["running"]["move_eye"]:
-    #     for i in range(16):
-    #         dynamic['eyes'][1]["selected"] = i
-    #         time.sleep(0.2)
     del static["running"]["move_eye"]
     return
