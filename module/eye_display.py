@@ -58,11 +58,13 @@ def __init__():
     while static["running"]["eye_display"]:
         for i in range(index + 1):
             if dynamic['eyes'][i]["enabled"]:
-                x = int(dynamic['eyes'][i]["x"] * screen_width / 2 + screen_width / 2 - files[i][dynamic['eyes'][index]["selected"]].width() / 2)
-                y = int(dynamic['eyes'][i]["y"] * screen_height / 2 + screen_height / 2 - files[i][dynamic['eyes'][index]["selected"]].height() / 2)
+                x = int(dynamic['eyes'][i]["x"] * screen_width / 2 + screen_width / 2 - files[i][
+                    dynamic['eyes'][index]["selected"]].width() / 2)
+                y = int(dynamic['eyes'][i]["y"] * screen_height / 2 + screen_height / 2 - files[i][
+                    dynamic['eyes'][index]["selected"]].height() / 2)
                 dynamic['eyes'][i]["nx"] = (int(
-                    canvas.coords(layer[i][dynamic['eyes'][index]["selected"]])[0]) - screen_width / 2 + files[
-                                                i][dynamic['eyes'][index]["selected"]].width() / 2) / screen_width * 2
+                    canvas.coords(layer[i][dynamic['eyes'][index]["selected"]])[0]) - screen_width / 2 + files[i][
+                                                dynamic['eyes'][index]["selected"]].width() / 2) / screen_width * 2
                 dynamic['eyes'][i]["ny"] = (int(
                     canvas.coords(layer[i][dynamic['eyes'][index]["selected"]])[1]) - screen_height / 2 + files[
                                                 i][dynamic['eyes'][index]["selected"]].height() / 2) / screen_height * 2
