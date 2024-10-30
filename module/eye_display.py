@@ -77,6 +77,7 @@ def __init__():
                     canvas.moveto(j, screen_width, screen_height)
         sleep(0.02)
         root.update()
+    canvas.delete("all")
     canvas.destroy()
     root.destroy()
     del static["running"]["eye_display"]
