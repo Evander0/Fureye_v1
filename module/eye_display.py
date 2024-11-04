@@ -93,19 +93,21 @@ def load(name):
     file = pathlib.Path(list(glob.glob(f'./{path}/{name}.*'))[0])
     files.append([])
     layer.append([])
-    img = Image.open(file)
-    img = img.resize((int(img.size[0] * scale / img.size[1]), scale))
 
     match file.suffix:
         case ".png" | ".jpg":
+            img = Image.open(file)
+            img = img.resize((int(img.size[0] * scale / img.size[1]), scale))
             files[index].append(ImageTk.PhotoImage(img))
             layer[index].append(canvas.create_image(0, 0, image=files[index][0], anchor=NW))
             canvas.moveto(layer[index][0], screen_width / 2 - files[index][0].width() / 2,
                           screen_height / 2 - files[index][0].height() / 2)
         case ".gif":
+            img = Image.open(file)
             for i in range(img.n_frames):
                 img.seek(i)
-                files[index].append(ImageTk.PhotoImage(img))
+                frame = img.resize((int(img.size[0] * scale / img.size[1]), scale))
+                files[index].append(ImageTk.PhotoImage(frame))
                 layer[index].append(canvas.create_image(0, 0, image=files[index][i], anchor=NW))
                 canvas.moveto(layer[index][i], screen_width / 2 - files[index][i].width() / 2,
                               screen_height / 2 - files[index][i].height() / 2)
