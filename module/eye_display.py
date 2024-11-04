@@ -7,7 +7,6 @@ from lib.lib import *
 from lib.config import Config
 from PIL import Image, ImageTk
 
-config_file = './config/display.json'
 default = {
     "Path": "src",
     "Layer": ["eye_l1"],
@@ -22,7 +21,7 @@ index = -1
 
 def __init__():
     global files, layer, screen_width, screen_height, path, conf, canvas
-    config = Config(config_file, default)
+    config = Config("display", default)
     conf = config.read()
     path = conf["Path"]
     file = conf["Layer"]

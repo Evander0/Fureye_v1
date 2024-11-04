@@ -3,7 +3,6 @@ from lib.config import Config
 import time
 import random
 
-config_file = './config/display_pos.json'
 default = {
     "Limit": [-0.05, 0.05],
     "Time": [0.5, 1]
@@ -13,7 +12,7 @@ default = {
 def __init__():
     global limit, wtime
 
-    config = Config(config_file, default)
+    config = Config("display_pos", default)
     conf = config.read()
     limit = conf["Limit"]
     wtime = conf["Time"]

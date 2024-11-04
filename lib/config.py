@@ -8,14 +8,14 @@ class Config:
 
     def __init__(self, file: str, default: dict = None):
         self.default = default
-        self.file = file
+        self.file = "./config/"+file+".json"
         try:
-            self.config = open(file, 'r+')
+            self.config = open(self.file, 'r+')
         except Exception as e:
             print("配置文件异常，正在重置")
             print("错误代码：" + str(e))
             data = json.dumps(default, indent=4)
-            with open(file, 'w') as f:
+            with open(self.file, 'w') as f:
                 f.write("\n" + data)
 
     def read(self):
