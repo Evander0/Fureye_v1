@@ -1,30 +1,23 @@
 from lib.lib import *
+from lib.config import Config
 import time
 import random
-import json
 
 config_file = './config/display_pos.json'
 default = {
     "Limit": [-0.05, 0.05],
     "Time": [0.5, 1]
 }
-limit = default["Limit"]
-wtime = default["Time"]
 
 
 def __init__():
     global limit, wtime
-    try:
-        with open(config_file, 'r') as f:
-            conf = json.load(f)
-        limit = conf['Limit']
-        wtime = conf['Time']
-    except Exception as e:
-        print("动眼驱动模块配置文件异常，正在重置")
-        print("错误代码：" + str(e))
-        data = json.dumps(default, indent=4)
-        with open(config_file, 'w') as f:
-            f.write("\n" + data)
+
+    config = Config(config_file, default)
+    conf = config.read()
+    limit = conf["Limit"]
+    wtime = conf["Time"]
+
     while not static["running"]["eye_display"]:
         continue
     mdata = dynamic["eyes"]

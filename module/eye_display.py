@@ -1,19 +1,18 @@
 import glob
-import json
 import sys
 import pathlib
 from time import sleep
 from tkinter import *
 from lib.lib import *
+from lib.config import Config
 from PIL import Image, ImageTk
 
 config_file = './config/display.json'
 default = {
     "Path": "src",
     "Layer": ["eye_l1"],
+    "Scale": ["1"],
 }
-path = default["Path"]
-file = default["Layer"]
 files: list = []
 layer: list = []
 screen_width = 0
@@ -22,19 +21,11 @@ index = -1
 
 
 def __init__():
-    global files, layer, file, path, screen_width, screen_height, canvas
-
-    try:
-        with open(config_file, 'r') as f:
-            conf = json.load(f)
-        path = conf['Path']
-        file = conf['Layer']
-    except Exception as e:
-        print("动眼显示模块配置文件异常，正在重置")
-        print("错误代码：" + str(e))
-        data = json.dumps(default, indent=4)
-        with open(config_file, 'w') as f:
-            f.write("\n" + data)
+    global files, layer, screen_width, screen_height, path, conf, canvas
+    config = Config(config_file, default)
+    conf = config.read()
+    path = conf["Path"]
+    file = conf["Layer"]
 
     dynamic['eyes'] = []
     root = Tk()
@@ -85,7 +76,7 @@ def __init__():
 
 
 def load(name):
-    global index, files, layer, path
+    global index, files, layer
     index = index + 1
     dynamic['eyes'].insert(index, {})
     dynamic['eyes'][index]["x"] = 0
@@ -94,19 +85,24 @@ def load(name):
     dynamic['eyes'][index]["ny"] = 0
     dynamic['eyes'][index]["selected"] = 0
     dynamic['eyes'][index]["enabled"] = False
+    try:
+        scale = int(float(conf["Scale"][index])*screen_height)
+    except ValueError:
+        scale = int(screen_height / 2)
 
     file = pathlib.Path(list(glob.glob(f'./{path}/{name}.*'))[0])
     files.append([])
     layer.append([])
+    img = Image.open(file)
+    img = img.resize((int(img.size[0] * scale / img.size[1]), scale))
+
     match file.suffix:
         case ".png" | ".jpg":
-            img = Image.open(file)
             files[index].append(ImageTk.PhotoImage(img))
             layer[index].append(canvas.create_image(0, 0, image=files[index][0], anchor=NW))
             canvas.moveto(layer[index][0], screen_width / 2 - files[index][0].width() / 2,
                           screen_height / 2 - files[index][0].height() / 2)
         case ".gif":
-            img = Image.open(file)
             for i in range(img.n_frames):
                 img.seek(i)
                 files[index].append(ImageTk.PhotoImage(img))
