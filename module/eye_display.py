@@ -56,8 +56,8 @@ def __init__():
                     canvas.coords(layer[i][dynamic['eyes'][index]["selected"]])[0]) - screen_width / 2 + files[i][
                                                 dynamic['eyes'][index]["selected"]].width() / 2) / screen_width * 2
                 dynamic['eyes'][i]["ny"] = (int(
-                    canvas.coords(layer[i][dynamic['eyes'][index]["selected"]])[1]) - screen_height / 2 + files[
-                                                i][dynamic['eyes'][index]["selected"]].height() / 2) / screen_height * 2
+                    canvas.coords(layer[i][dynamic['eyes'][index]["selected"]])[1]) - screen_height / 2 + files[i][
+                                                dynamic['eyes'][index]["selected"]].height() / 2) / screen_height * 2
                 if len(layer[i]) > 1:
                     for j in layer[i]:
                         canvas.moveto(j, screen_width, screen_height)
