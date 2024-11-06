@@ -1,4 +1,5 @@
 from lib.lib import *
+import lib.command as comm
 import os
 import importlib
 import sys
@@ -16,7 +17,7 @@ path = os.path.join("module")
 sys.path.append(path)
 files = os.listdir(path)
 
-config_file = './config/main.json'
+config_file = 'config/main.json'
 default = {
     "Disabled": []
 }
@@ -89,6 +90,67 @@ def quit_all():
         pass
 
 
+def check_log():
+    num = 0
+    while True:
+        log_file = f"logs/{time.strftime('%Y-%m-%d', time.localtime())}-{num}.log"
+        if not os.path.isfile(log_file):
+            return log_file
+        else:
+            num += 1
+
+
+def logger(msg):
+    if msg == "\n":
+        log.write("\n")
+    elif msg not in ["", " ", "\r"]:
+        msg.replace("\n", "")
+        log.write(msg)
+        log.flush()
+
+
+class err_handler:
+    def __init__(self):
+        self.old_stm = sys.stderr
+        sys.stderr = self
+
+    def write(self, msg):
+        if str(msg).startswith("Exception"):
+            # self.old_stm.write("\r" + msg)
+            logger(msg)
+        else:
+            # self.old_stm.write(msg)
+            logger(msg)
+
+    def flush(self):
+        self.old_stm.flush()
+
+
+class log_handler:
+    def __init__(self):
+        self.old_stm = sys.stdout
+        sys.stdout = self
+
+    def write(self, msg):
+        self.old_stm.write(msg)
+        logger(msg)
+
+    def flush(self):
+        self.old_stm.flush()
+
+
+if not os.path.exists('logs'):
+    print("正在创建日志文件夹")
+    os.mkdir('logs')
+if not os.path.exists('config'):
+    print("正在创建配置文件夹")
+    os.mkdir('config')
+log = open(check_log(), "w+", encoding="utf-8")
+
+raw_output = sys.stdout
+sys.stderr = err_handler()
+sys.stdout = log_handler()
+
 os_info = platform.system()
 os_version = platform.version()
 python_version = platform.python_version()
@@ -100,10 +162,6 @@ static["SYS_VER"] = os_version
 static["PY_VER"] = python_version
 static["running"] = {}
 disabled = []
-
-if not os.path.exists('config'):
-    print("正在创建配置文件夹")
-    os.mkdir('config')
 try:
     with open(config_file, 'r') as f:
         conf = json.load(f)
@@ -138,15 +196,17 @@ for name in plugins:
             continue
         load_module(name)
 
-
 while 1:
     try:
-        command = input("$: ").split(" ")
-        match command[0]:
+        # raw_output.write("\r" + "$: ")
+        raw_output.write("$: ")
+        raw_output.flush()
+        usrcommand = input().split(" ")
+        match usrcommand[0]:
             case "quit":
                 try:
-                    if command[1] in threads:
-                        unload_module(command[1])
+                    if usrcommand[1] in threads:
+                        unload_module(usrcommand[1])
                     else:
                         print("未知模块")
                 except IndexError:
@@ -154,15 +214,23 @@ while 1:
                     print("主程序终止")
                     quit()
             case "list":
-                match command[1]:
+                match usrcommand[1]:
                     case "plugins":
                         print(plugins)
                     case "threads":
                         print(threads)
                     case _:
                         print("未知指令(plugins/threads)")
+            case "command":
+                match usrcommand[1]:
+                    case "unregister":
+                        comm.unregister(usrcommand[2])
+                    case _:
+                        print("未知指令(unregister)")
+            case "":
+                pass
             case _:
-                print("未知指令")
+                comm.command(usrcommand)
     except IndexError:
         print("未知指令")
     except KeyboardInterrupt:
