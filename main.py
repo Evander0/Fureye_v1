@@ -140,11 +140,11 @@ class log_handler:
 
 
 def command_handler(command):
-    match usrcommand[0]:
+    match command[0]:
         case "quit":
             try:
-                if usrcommand[1] in threads:
-                    unload_module(usrcommand[1])
+                if command[1] in threads:
+                    unload_module(command[1])
                 else:
                     print("未知模块")
             except IndexError:
@@ -152,7 +152,7 @@ def command_handler(command):
                 print("主程序终止")
                 quit()
         case"list":
-            match usrcommand[1]:
+            match command[1]:
                 case "plugins":
                     print(plugins)
                 case "threads":
@@ -160,9 +160,9 @@ def command_handler(command):
                 case _:
                     print("未知指令(plugins/threads)")
         case "command":
-            match usrcommand[1]:
+            match command[1]:
                 case "unregister":
-                    comm.unregister(usrcommand[2])
+                    comm.unregister(command[2])
                 case _:
                     print("未知指令(unregister)")
 
