@@ -139,6 +139,34 @@ class log_handler:
         self.old_stm.flush()
 
 
+def command_handler(command):
+    match usrcommand[0]:
+        case "quit":
+            try:
+                if usrcommand[1] in threads:
+                    unload_module(usrcommand[1])
+                else:
+                    print("未知模块")
+            except IndexError:
+                quit_all()
+                print("主程序终止")
+                quit()
+        case"list":
+            match usrcommand[1]:
+                case "plugins":
+                    print(plugins)
+                case "threads":
+                    print(threads)
+                case _:
+                    print("未知指令(plugins/threads)")
+        case "command":
+            match usrcommand[1]:
+                case "unregister":
+                    comm.unregister(usrcommand[2])
+                case _:
+                    print("未知指令(unregister)")
+
+
 if not os.path.exists('logs'):
     print("正在创建日志文件夹")
     os.mkdir('logs')
@@ -196,43 +224,12 @@ for name in plugins:
             continue
         load_module(name)
 
+comm.register("core", command_handler)
 while 1:
     try:
-        # raw_output.write("\r" + "$: ")
         raw_output.write("$: ")
         raw_output.flush()
-        usrcommand = input().split(" ")
-        match usrcommand[0]:
-            case "quit":
-                try:
-                    if usrcommand[1] in threads:
-                        unload_module(usrcommand[1])
-                    else:
-                        print("未知模块")
-                except IndexError:
-                    quit_all()
-                    print("主程序终止")
-                    quit()
-            case "list":
-                match usrcommand[1]:
-                    case "plugins":
-                        print(plugins)
-                    case "threads":
-                        print(threads)
-                    case _:
-                        print("未知指令(plugins/threads)")
-            case "command":
-                match usrcommand[1]:
-                    case "unregister":
-                        comm.unregister(usrcommand[2])
-                    case _:
-                        print("未知指令(unregister)")
-            case "":
-                pass
-            case _:
-                comm.command(usrcommand)
-    except IndexError:
-        print("未知指令")
+        comm.command(input().split(" "))
     except KeyboardInterrupt:
         quit_all()
         print("主程序终止")
