@@ -89,7 +89,7 @@ def load(name):
     except ValueError:
         scale = int(screen_height / 2)
 
-    file = pathlib.Path(list(glob.glob(f'./{path}/{name}.*'))[0])
+    file = pathlib.Path(list(glob.glob(f'{path}/{name}.*'))[0])
     files.append([])
     layer.append([])
 

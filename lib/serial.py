@@ -56,6 +56,10 @@ class Serial:
             wiringpi.serialFlush(self.serial)
             wiringpi.serialPutchar(self.serial, 4)
 
+    def send_raw(self, msg):
+        wiringpi.serialFlush(self.serial)
+        wiringpi.serialPutchar(self.serial, msg)
+
     def close(self):
         wiringpi.serialClose(self.serial)
         self.listening = False
