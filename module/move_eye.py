@@ -30,5 +30,4 @@ def __init__():
             mdata[0]["x"] += (x - mdata[0]["nx"]) / 20
             mdata[0]["y"] += (y - mdata[0]["ny"]) / 20
             time.sleep(0.01)
-    del static["running"]["move_eye"]
     return

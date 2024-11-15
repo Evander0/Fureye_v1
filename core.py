@@ -90,6 +90,21 @@ def quit_all():
         pass
 
 
+def thread_watcher():
+    while True:
+        for i in list(threads):
+            if not threads[str(i)].is_alive():
+                threads.pop(i)
+                del static["running"][str(i)]
+                err_output.write(f"\rThread {i} closed\n")
+                err_output.flush()
+                print(f"Thread {i} closed", file=sys.stderr)
+                time.sleep(0.1)
+                raw_output.write("\r$: ")
+                raw_output.flush()
+        time.sleep(1)
+
+
 def check_log():
     num = 0
     while True:
@@ -110,16 +125,25 @@ def logger(msg):
 
 
 class err_handler:
+    thread_closed = False
+
     def __init__(self):
         self.old_stm = sys.stderr
-        sys.stderr = self
 
     def write(self, msg):
-        if str(msg).startswith("Exception"):
-            # self.old_stm.write("\r" + msg)
+        if str(msg).startswith("Exception in thread"):
             logger(msg)
+            self.thread_closed = True
+        elif self.thread_closed:
+            thread = str(msg)
+            self.old_stm.write(f"\rThread {thread} raised an exception\n")
+            self.old_stm.flush()
+            time.sleep(0.1)
+            raw_output.write("$: ")
+            raw_output.flush()
+            logger(msg)
+            self.thread_closed = False
         else:
-            # self.old_stm.write(msg)
             logger(msg)
 
     def flush(self):
@@ -129,10 +153,9 @@ class err_handler:
 class log_handler:
     def __init__(self):
         self.old_stm = sys.stdout
-        sys.stdout = self
 
     def write(self, msg):
-        self.old_stm.write(msg)
+        self.old_stm.write('\r'+msg)
         logger(msg)
 
     def flush(self):
@@ -151,7 +174,7 @@ def command_handler(command):
                 quit_all()
                 print("主程序终止")
                 quit()
-        case"list":
+        case "list":
             match command[1]:
                 case "plugins":
                     print(plugins)
@@ -176,8 +199,9 @@ if not os.path.exists('config'):
 log = open(check_log(), "w+", encoding="utf-8")
 
 raw_output = sys.stdout
-sys.stderr = err_handler()
+err_output = sys.stderr
 sys.stdout = log_handler()
+sys.stderr = err_handler()
 
 os_info = platform.system()
 os_version = platform.version()
@@ -224,6 +248,8 @@ for name in plugins:
             continue
         load_module(name)
 
+watchdog = threading.Thread(target=thread_watcher, name="watch_dog", daemon=True)
+watchdog.start()
 comm.register("core", command_handler)
 while 1:
     try:

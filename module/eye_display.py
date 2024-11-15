@@ -70,7 +70,6 @@ def __init__():
     canvas.delete("all")
     canvas.destroy()
     root.destroy()
-    del static["running"]["eye_display"]
     return
 
 

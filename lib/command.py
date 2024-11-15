@@ -1,3 +1,5 @@
+import sys
+
 command_list: dict = {}
 
 
@@ -10,9 +12,12 @@ def unregister(command: str):
 
 
 def command(command: list):
-    if command[0] is "":
+    if command[0] == "":
         pass
     elif command[0] in command_list.keys():
-        command_list[command[0]](command[1:])
+        try:
+            command_list[command[0]](command[1:])
+        except Exception as e:
+            print(e, file=sys.stderr)
     else:
         print("未知指令")
