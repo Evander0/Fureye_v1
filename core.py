@@ -164,31 +164,28 @@ class log_handler:
 
 
 def command_handler(command):
-    match command[0]:
-        case "quit":
-            try:
-                if command[1] in threads:
-                    unload_module(command[1])
-                else:
-                    print("未知模块")
-            except IndexError:
-                quit_all()
-                print("主程序终止")
-                quit()
-        case "list":
-            match command[1]:
-                case "plugins":
-                    print(plugins)
-                case "threads":
-                    print(threads)
-                case _:
-                    print("未知指令(plugins/threads)")
-        case "command":
-            match command[1]:
-                case "unregister":
-                    comm.unregister(command[2])
-                case _:
-                    print("未知指令(unregister)")
+    if command[0] == "quit":
+        try:
+            if command[1] in threads:
+                unload_module(command[1])
+            else:
+                print("未知模块")
+        except IndexError:
+            quit_all()
+            print("主程序终止")
+            quit()
+    elif command[0] == "list":
+        if command[1] == "plugins":
+            print(plugins)
+        elif command[1] == "threads":
+            print(threads)
+        else:
+            print("未知指令(plugins/threads)")
+    elif command[0] == "command":
+        if command[1] == "unregister":
+            comm.unregister(command[2])
+        else:
+            print("未知指令(unregister)")
 
 
 if not os.path.exists('logs'):

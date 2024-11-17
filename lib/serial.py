@@ -26,21 +26,19 @@ class Serial:
         :param Encoding: "Utf-8", "gbk"
         :return:
         """
-        match Mode:
-            case "Text":
-                self.mode = Mode
-            case "HEX":
-                self.mode = Mode
-            case _:
-                raise ValueError(f"Unexpected Mode: {self.mode}")
+        if Mode == "Text":
+            self.mode = Mode
+        elif Mode == "HEX":
+            self.mode = Mode
+        else:
+            raise ValueError(f"Unexpected Mode: {self.mode}")
 
-        match Encoding:
-            case "Utf-8":
-                self.encoding = Encoding
-            case "gbk":
-                self.encoding = Encoding
-            case _:
-                raise ValueError(f"Unexpected Encoding: {self.encoding}")
+        if Encoding == "Utf-8":
+            self.encoding = Encoding
+        elif Encoding == "gbk":
+            self.encoding = Encoding
+        else:
+            raise ValueError(f"Unexpected Encoding: {self.encoding}")
 
     def send(self, msg):
         if self.mode == "HEX":
