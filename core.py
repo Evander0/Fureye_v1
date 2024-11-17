@@ -40,6 +40,7 @@ def load_module(t_name):
         threads[t_name] = threading.Thread(target=loaded_plugins[t_name].__init__,
                                            name=t_name, daemon=True)
         threads[t_name].start()
+        static["running"][t_name] = False
         return threads[t_name]
     except Exception as e:
         print(f"Exception running module {t_name}: {e}")
