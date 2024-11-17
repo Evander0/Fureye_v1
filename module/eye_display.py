@@ -92,7 +92,7 @@ def load(name):
     files.append([])
     layer.append([])
 
-    if file.suffix == ".png" | ".jpg":
+    if file.suffix == ".png" or file.suffix == ".jpg":
         img = Image.open(file)
         img = img.resize((int(img.size[0] * scale / img.size[1]), scale))
         files[index].append(ImageTk.PhotoImage(img))
