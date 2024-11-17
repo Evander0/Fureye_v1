@@ -17,6 +17,7 @@ class Config:
             data = json.dumps(default, indent=4)
             with open(self.file, 'w') as f:
                 f.write("\n" + data)
+            self.config = open(self.file, 'r+')
 
     def read(self):
         try:
