@@ -2,7 +2,6 @@ import json
 
 
 class Config:
-    config = None
     file: str = None
     default: dict = None
 
@@ -10,19 +9,20 @@ class Config:
         self.default = default
         self.file = "./config/"+file+".json"
         try:
-            self.config = open(self.file, 'r+')
+            with open(self.file, 'r') as f:
+                self.conf = json.load(f)
         except Exception as e:
             print("配置文件异常，正在重置")
             print("错误代码：" + str(e))
-            data = json.dumps(default, indent=4)
+            self.data = json.dumps(default, indent=4)
             with open(self.file, 'w') as f:
-                f.write("\n" + data)
-            self.config = open(self.file, 'r+')
+                f.write("\n" + self.data)
 
     def read(self):
         try:
-            conf = json.load(self.config)
-            return conf
+            with open(self.file, 'r') as f:
+                self.conf = json.load(f)
+            return self.conf
         except Exception as e:
             print("读取配置文件异常")
             print("错误代码：" + str(e))
@@ -30,21 +30,19 @@ class Config:
 
     def write(self, t: dict):
         try:
-            conf = json.load(self.config)
-            conf.update(t)
-            data = json.dumps(conf, indent=4)
-            self.config.write("\n" + data)
-            self.config.flush()
+            self.conf.update(t)
+            with open(self.file, 'w') as f:
+                data = json.dumps(self.conf, indent=4)
+                f.write("\n" + data)
+                f.flush()
         except Exception as e:
             print("读取配置文件异常")
             print("错误代码：" + str(e))
             return -1
 
     def wipe(self):
-        data = json.dumps({}, indent=4)
         with open(self.file, 'w') as f:
-            f.write("\n" + data)
+            f.write("\n" + self.data)
             f.flush()
-
-    def close(self):
-        self.config.close()
+        with open(self.file, 'r') as f:
+            self.conf = json.load(f)
