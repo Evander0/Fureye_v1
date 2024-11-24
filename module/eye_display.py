@@ -20,7 +20,7 @@ index = -1
 
 
 def __init__():
-    global files, layer, screen_width, screen_height, path, conf, canvas
+    global files, layer, screen_width, screen_height, path, conf, config, canvas
     config = Config("display", default)
     conf = config.read()
     path = conf["Path"]
@@ -75,6 +75,12 @@ def __init__():
 
 def load(name):
     global index, files, layer
+    try:
+        file = pathlib.Path(list(glob.glob(f'{path}/{name}.*'))[0])
+    except IndexError:
+        print(f"File {name} not found")
+        return -1
+
     index = index + 1
     dynamic['eyes'].insert(index, {})
     dynamic['eyes'][index]["x"] = 0
@@ -87,8 +93,9 @@ def load(name):
         scale = int(float(conf["Scale"][index])*screen_height)
     except ValueError:
         scale = int(screen_height / 2)
-
-    file = pathlib.Path(list(glob.glob(f'{path}/{name}.*'))[0])
+    except IndexError:
+        config.write({'Scale': conf["Scale"].insert(index, 1)})
+        scale = int(screen_height / 2)
     files.append([])
     layer.append([])
 
