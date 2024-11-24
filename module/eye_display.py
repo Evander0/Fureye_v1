@@ -3,6 +3,8 @@ import sys
 import pathlib
 from time import sleep
 from tkinter import *
+from traceback import print_tb
+
 from lib.lib import *
 from lib.config import Config
 from PIL import Image, ImageTk
@@ -74,7 +76,7 @@ def __init__():
 
 
 def load(name):
-    global index, files, layer
+    global index, files, layer, conf
     try:
         file = pathlib.Path(list(glob.glob(f'{path}/{name}.*'))[0])
     except IndexError:
@@ -91,11 +93,13 @@ def load(name):
     dynamic['eyes'][index]["enabled"] = False
     try:
         scale = int(float(conf["Scale"][index])*screen_height)
-    except ValueError:
-        scale = int(screen_height / 2)
-    except IndexError:
-        config.write({'Scale': conf["Scale"].insert(index, 1)})
-        scale = int(screen_height / 2)
+    except (IndexError, TypeError, ValueError):
+        if type(conf["Scale"]) is not list:
+            config.write({'Scale': [1]})
+        else:
+            config.write({'Scale': conf["Scale"]+[1]})
+        conf = config.read()
+        scale = int(float(conf["Scale"][index])*screen_height)
     files.append([])
     layer.append([])
 
