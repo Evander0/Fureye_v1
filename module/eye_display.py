@@ -3,7 +3,6 @@ import sys
 import pathlib
 from time import sleep
 from tkinter import *
-from traceback import print_tb
 
 from lib.lib import *
 from lib.config import Config
